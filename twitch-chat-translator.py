@@ -16,8 +16,8 @@ Environment variables (see env.example):
   TWITCH_OAUTH_TOKEN        – OAuth token with chat:read (+ chat:edit if sending) scope
   TWITCH_BOT_USERNAME       – Twitch login name of your bot (lowercase)
   TWITCH_CHANNEL            – Channel to join (without the #)
-  AZURE_TWITCH_KEY          – Azure Translator key for Twitch translations
-  AZURE_TWITCH_ENDPOINT     – Endpoint, default https://api.cognitive.microsofttranslator.com
+  AZURE_TRANSLATOR_KEY          – Azure Translator key for Twitch translations
+  AZURE_TRANSLATOR_ENDPOINT     – Endpoint, default https://api.cognitive.microsofttranslator.com
   AZURE_TWITCH_REGION       – Region (e.g. eastus)
   TARGET_LANGUAGE           – Output language for Twitch (default: en)
   MIN_MESSAGE_LENGTH        – Skip very short messages (default: 1)
@@ -51,8 +51,8 @@ TWITCH_OAUTH_TOKEN = os.getenv("TWITCH_OAUTH_TOKEN")
 TWITCH_BOT_USERNAME = os.getenv("TWITCH_BOT_USERNAME", "").lower()
 
 # Azure (separate) for Twitch
-AZURE_TWITCH_KEY = os.getenv("AZURE_TWITCH_KEY")
-AZURE_TWITCH_ENDPOINT = os.getenv("AZURE_TWITCH_ENDPOINT", "https://api.cognitive.microsofttranslator.com")
+AZURE_TRANSLATOR_KEY = os.getenv("AZURE_TRANSLATOR_KEY")
+AZURE_TRANSLATOR_ENDPOINT = os.getenv("AZURE_TRANSLATOR_ENDPOINT", "https://api.cognitive.microsofttranslator.com")
 AZURE_TWITCH_REGION = os.getenv("AZURE_TWITCH_REGION")
 
 TARGET_LANGUAGE = os.getenv("TARGET_LANGUAGE", "en")
@@ -92,19 +92,19 @@ class TwitchChatTranslator:
             return None
 
     def translate_text(self, text: str, source_lang: str) -> Optional[str]:
-        if not AZURE_TWITCH_KEY:
+        if not AZURE_TRANSLATOR_KEY:
             print("⚠️ No Azure Translator key for Twitch – cannot translate.")
             return None
 
         path = "/translate"
-        url = AZURE_TWITCH_ENDPOINT + path
+        url = AZURE_TRANSLATOR_ENDPOINT + path
         params = {
             "api-version": "3.0",
             "from": source_lang,
             "to": TARGET_LANGUAGE,
         }
         headers = {
-            "Ocp-Apim-Subscription-Key": AZURE_TWITCH_KEY,
+            "Ocp-Apim-Subscription-Key": AZURE_TRANSLATOR_KEY,
             "Ocp-Apim-Subscription-Region": AZURE_TWITCH_REGION,
             "Content-type": "application/json",
             "X-ClientTraceId": str(uuid.uuid4()),
@@ -238,7 +238,7 @@ class TwitchChatTranslator:
 
     def start(self):
         print(f"🤖 Twitch Chat Translator for #{self.channel}")
-        if not AZURE_TWITCH_KEY:
+        if not AZURE_TRANSLATOR_KEY:
             print("⚠️ Missing Azure credentials – will not translate.")
         ws = websocket.WebSocketApp(
             IRC_URL,
