@@ -18,7 +18,7 @@ Environment variables (see env.example):
   TWITCH_CHANNEL            – Channel to join (without the #)
   AZURE_TRANSLATOR_KEY          – Azure Translator key for Twitch translations
   AZURE_TRANSLATOR_ENDPOINT     – Endpoint, default https://api.cognitive.microsofttranslator.com
-  AZURE_TWITCH_REGION       – Region (e.g. eastus)
+  AZURE_TRANSLATOR_REGION       – Region (e.g. eastus)
   TARGET_LANGUAGE           – Output language for Twitch (default: en)
   MIN_MESSAGE_LENGTH        – Skip very short messages (default: 1)
   RATE_LIMIT_DELAY          – Seconds between translations (0 = unlimited)
@@ -53,7 +53,7 @@ TWITCH_BOT_USERNAME = os.getenv("TWITCH_BOT_USERNAME", "").lower()
 # Azure (separate) for Twitch
 AZURE_TRANSLATOR_KEY = os.getenv("AZURE_TRANSLATOR_KEY")
 AZURE_TRANSLATOR_ENDPOINT = os.getenv("AZURE_TRANSLATOR_ENDPOINT", "https://api.cognitive.microsofttranslator.com")
-AZURE_TWITCH_REGION = os.getenv("AZURE_TWITCH_REGION")
+AZURE_TRANSLATOR_REGION = os.getenv("AZURE_TRANSLATOR_REGION")
 
 TARGET_LANGUAGE = os.getenv("TARGET_LANGUAGE", "en")
 MIN_MESSAGE_LENGTH = int(os.getenv("MIN_MESSAGE_LENGTH", "1"))
@@ -105,7 +105,7 @@ class TwitchChatTranslator:
         }
         headers = {
             "Ocp-Apim-Subscription-Key": AZURE_TRANSLATOR_KEY,
-            "Ocp-Apim-Subscription-Region": AZURE_TWITCH_REGION,
+            "Ocp-Apim-Subscription-Region": AZURE_TRANSLATOR_REGION,
             "Content-type": "application/json",
             "X-ClientTraceId": str(uuid.uuid4()),
         }
