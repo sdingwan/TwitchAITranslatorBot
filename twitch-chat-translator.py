@@ -34,6 +34,7 @@ import sys
 import threading
 import time
 import uuid
+import re
 from typing import Optional
 
 import requests
@@ -166,6 +167,13 @@ class TwitchChatTranslator:
 
         print(f"👤 {username}: {msg}")
 
+        # Skip messages that only contain one or more Kick emotes [emote:id:name] (with optional whitespace)
+        emote_pattern = r'^(\s*\[emote:\d+:[^\]]+\]\s*)+$'
+        if re.fullmatch(emote_pattern, msg.strip()):
+            print("   ⏭️ Skipped: Message contains only emote(s)")
+            print()
+            return
+
         clean = msg.strip()
         if len(clean) < MIN_MESSAGE_LENGTH:
             print(f"   ⏭️ Skipped: Too short (length {len(clean)} < {MIN_MESSAGE_LENGTH})")
@@ -194,7 +202,8 @@ class TwitchChatTranslator:
             print()
             return
 
-        translation = f"[by {username}] {translated} ({detected} > {TARGET_LANGUAGE})"
+        # Format translation message in italics using /me (Twitch IRC action)
+        translation = f"/me [by {username}] {translated} ({detected} > {TARGET_LANGUAGE})"
         print(f"➡️  {translation}")
         self.send_chat(ws, translation)
         print()  # Add a blank line for readability between messages
