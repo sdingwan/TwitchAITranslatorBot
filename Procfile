@@ -1,0 +1,1 @@
+worker: python twitch-chat-translator.py 
