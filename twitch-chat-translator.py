@@ -202,8 +202,8 @@ class TwitchChatTranslator:
             print()
             return
 
-        # Format translation message in italics using /me (Twitch IRC action)
-        translation = f"/me [by {username}] {translated} ({detected} > {TARGET_LANGUAGE})"
+        # Format translation message as plain text (no /me)
+        translation = f"[by {username}] {translated} ({detected} > {TARGET_LANGUAGE})"
         print(f"➡️  {translation}")
         self.send_chat(ws, translation)
         print()  # Add a blank line for readability between messages
