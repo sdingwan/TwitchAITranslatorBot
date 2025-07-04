@@ -57,11 +57,21 @@ AZURE_TRANSLATOR_ENDPOINT = os.getenv("AZURE_TRANSLATOR_ENDPOINT", "https://api.
 AZURE_TRANSLATOR_REGION = os.getenv("AZURE_TRANSLATOR_REGION")
 
 TARGET_LANGUAGE = os.getenv("TARGET_LANGUAGE", "en")
-MIN_MESSAGE_LENGTH = int(os.getenv("MIN_MESSAGE_LENGTH", "1"))
+MIN_MESSAGE_LENGTH = int(os.getenv("MIN_MESSAGE_LENGTH", "2"))
 RATE_LIMIT_DELAY = int(os.getenv("RATE_LIMIT_DELAY", "0"))
 
 # Only translate these languages in Twitch chat
 ALLOWED_LANGUAGES = {"tr", "ko", "ru", "zh"}
+
+# Add set of common English phrases
+COMMON_ENGLISH_PHRASES = {
+    'lol', 'gg', 'wp', 'ez', 'kekw', 'pog', 'poggers', 'omegalul', 'lul', 'xd', 'lmao',
+    'rofl', 'wtf', 'brb', 'afk', 'hi', 'hello', 'bye', 'thanks', 'thank you', 'ok', 'okay',
+    'nice', 'good', 'bad', 'cool', 'great', 'awesome', 'amazing', 'wow', 'yes', 'no',
+    'yo', 'sup', 'yo!', 'yo.', 'yo?', 'yo~', 'yo-', 'yo_', 'yo,', 'yo;', 'yo:', 'yo!',
+    'hii', 'hiii', 'hiiii', 'hi!', 'hi.', 'hi,',
+    'bye!', 'bye.', 'bye,', 'bye;', 'bye:', 'bye~', 'bye-', 'bye_',
+}
 
 # ────────────────────────────────────────────────────────────────────────
 
@@ -174,6 +184,12 @@ class TwitchChatTranslator:
             print()
             return
 
+        # Skip if message is only common English phrases
+        if is_mostly_common_english(msg):
+            print("   ⏭️ Skipped: Message is only common English phrases")
+            print()
+            return
+
         clean = msg.strip()
         if len(clean) < MIN_MESSAGE_LENGTH:
             print(f"   ⏭️ Skipped: Too short (length {len(clean)} < {MIN_MESSAGE_LENGTH})")
@@ -281,6 +297,16 @@ def main():
 
     translator = TwitchChatTranslator(channel, oauth)
     translator.start()
+
+def is_mostly_common_english(msg: str) -> bool:
+    # Remove punctuation, lowercase, split into words
+    words = re.findall(r"\b\w+\b", msg.lower())
+    if not words:
+        return False
+    # Count how many words are in the common set
+    common_count = sum(word in COMMON_ENGLISH_PHRASES for word in words)
+    # If all or all but one are common, skip
+    return common_count >= len(words) - 0
 
 if __name__ == "__main__":
     main() 
