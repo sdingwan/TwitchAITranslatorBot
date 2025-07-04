@@ -41,6 +41,7 @@ import requests
 import websocket
 from dotenv import load_dotenv
 from langdetect import detect
+import unicodedata
 
 load_dotenv()
 
@@ -218,6 +219,12 @@ class TwitchChatTranslator:
             print()
             return
 
+        # Skip if translation is redundant
+        if is_redundant_translation(msg, translated):
+            print("   ⏭️ Skipped: Translation is redundant (same as original)")
+            print()
+            return
+
         # Format translation message as plain text (no /me)
         translation = f"[by {username}] {translated} ({detected} > {TARGET_LANGUAGE})"
         print(f"➡️  {translation}")
@@ -307,6 +314,14 @@ def is_mostly_common_english(msg: str) -> bool:
     common_count = sum(word in COMMON_ENGLISH_PHRASES for word in words)
     # If all or all but one are common, skip
     return common_count >= len(words) - 0
+
+def is_redundant_translation(original: str, translated: str) -> bool:
+    def normalize(s):
+        s = s.strip().lower()
+        s = unicodedata.normalize('NFKD', s)
+        s = ''.join(c for c in s if not unicodedata.combining(c))
+        return s
+    return normalize(original) == normalize(translated)
 
 if __name__ == "__main__":
     main() 
