@@ -74,6 +74,11 @@ COMMON_ENGLISH_PHRASES = {
     'bye!', 'bye.', 'bye,', 'bye;', 'bye:', 'bye~', 'bye-', 'bye_',
 }
 
+# Add set of known bot usernames
+KNOWN_BOT_USERNAMES = {
+    'streamelements', 'nightbot', 'moobot', 'wizebot', 'streamlabs', 'fossabot',
+}
+
 # ────────────────────────────────────────────────────────────────────────
 
 class TwitchChatTranslator:
@@ -175,6 +180,12 @@ class TwitchChatTranslator:
         username = prefix.split("!")[0]
         if TWITCH_BOT_USERNAME and username.lower() == TWITCH_BOT_USERNAME:
             return  # Skip own messages
+
+        # Skip messages from known bots
+        if username.lower() in KNOWN_BOT_USERNAMES:
+            print(f"   ⏭️ Skipped: Message from known bot '{username}'")
+            print()
+            return
 
         print(f"👤 {username}: {msg}")
 
