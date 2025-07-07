@@ -69,9 +69,7 @@ COMMON_ENGLISH_PHRASES = {
     'lol', 'gg', 'wp', 'ez', 'kekw', 'pog', 'poggers', 'omegalul', 'lul', 'xd', 'lmao',
     'rofl', 'wtf', 'brb', 'afk', 'hi', 'hello', 'bye', 'thanks', 'thank you', 'ok', 'okay',
     'nice', 'good', 'bad', 'cool', 'great', 'awesome', 'amazing', 'wow', 'yes', 'no',
-    'yo', 'sup', 'yo!', 'yo.', 'yo?', 'yo~', 'yo-', 'yo_', 'yo,', 'yo;', 'yo:', 'yo!',
-    'hii', 'hiii', 'hiiii', 'hi!', 'hi.', 'hi,',
-    'bye!', 'bye.', 'bye,', 'bye;', 'bye:', 'bye~', 'bye-', 'bye_',
+    'yo', 'sup','hii', 'hiii','bye', 'yes', 'yeah', 'no', 'nah', 'nope',
 }
 
 # Add set of known bot usernames
@@ -188,6 +186,12 @@ class TwitchChatTranslator:
             return
 
         print(f"👤 {username}: {msg}")
+
+        # Skip messages that start with '!'
+        if msg.strip().startswith("!"):
+            print("   ⏭️ Skipped: Message starts with '!' (likely a command)")
+            print()
+            return
 
         # Skip messages that only contain one or more Kick emotes [emote:id:name] (with optional whitespace)
         emote_pattern = r'^(\s*\[emote:\d+:[^\]]+\]\s*)+$'
